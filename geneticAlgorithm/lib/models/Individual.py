@@ -17,8 +17,6 @@ class Individual:
         self.__genotype_y: List[int] = Coder.code(y)
         self.__value_of_adaptation: float = 0
         self.__probability_of_selection: float = 0
-        self.__start: float = 0
-        self.__stop: float = 0
 
     @classmethod
     def init(cls, individual):
@@ -29,16 +27,12 @@ class Individual:
         individual.__genotype_y = individual.genotype_y
         individual.__value_of_adaptation = individual.value_of_adaptation
         individual.__probability_of_selection = individual.probability_of_selection
-        individual.__start = individual.start
-        individual.__stop = individual.stop
         return individual
 
     def __copy__(self):
         new_individual = Individual(self.__phenotype_x, self.__phenotype_y)
         new_individual.value_of_adaptation = self.value_of_adaptation
         new_individual.probability_of_selection = self.probability_of_selection
-        new_individual.start = self.start
-        new_individual.stop = self.stop
         return new_individual
 
     @classmethod
@@ -72,22 +66,6 @@ class Individual:
     @value_of_adaptation.setter
     def value_of_adaptation(self, value: float):
         self.__value_of_adaptation = value
-
-    @property
-    def start(self) -> float:
-        return self.__start
-
-    @start.setter
-    def start(self, value: float):
-        self.__start = value
-
-    @property
-    def stop(self) -> float:
-        return self.__stop
-
-    @stop.setter
-    def stop(self, value: float):
-        self.__stop = value
 
     @property
     def probability_of_selection(self) -> float:
@@ -132,11 +110,6 @@ class Individual:
     def phenotype_y(self, value: float):
         self.__genotype_y = Coder.code(value)
         self.__phenotype_y = value
-
-    def is_selected(self, probability):
-        if self.__start < probability < self.__stop:
-            return True
-        return False
 
     def mutation(self, probability_of_mutation, number_bits_for_mutation):
         mutation_is_accepted = ProbabilityDecider.decide_with_probability(probability_of_mutation)

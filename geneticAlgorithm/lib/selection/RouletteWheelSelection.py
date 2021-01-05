@@ -1,5 +1,5 @@
 import random
-from typing import List
+from typing import List, Tuple, Dict
 
 from geneticAlgorithm import GeneticAlgorithm
 from geneticAlgorithm.fun.Function import Function
@@ -12,6 +12,7 @@ class RouletteWheelSelection(Selection):
     def __init__(self):
         super().__init__()
         self.__parents_population = list()
+        self.__wheel: Dict[Tuple[float, float], Individual] = dict()
 
     def selection(self, function: Function) -> List[Individual]:
         self.__init_roulette_wheel()
@@ -30,21 +31,25 @@ class RouletteWheelSelection(Selection):
 
         for individual in self.population:
             individual.probability_of_selection = individual.value_of_adaptation / sum_adaption_value
-        start = 0
+        tmp_start = 0
+        self.__wheel = dict()
         for individual in self.population:
-            individual.start = start
-            individual.stop = start + individual.probability_of_selection
-            start = individual.stop
+            tmp_stop = tmp_start + individual.probability_of_selection
+            key = (tmp_start, tmp_stop)
+            self.__wheel[key] = individual
+            tmp_start = tmp_stop
 
     def __random_parent_population(self):
         self.__parents_population.clear()
         while True:
             random_probability = random.random()
-            for individual in self.population:
-                if individual.is_selected(random_probability):
+            for key in self.__wheel.keys():
+                start = key[0]
+                stop = key[1]
+                if start <= random_probability <= stop:
+                    individual = self.__wheel[key]
                     parent_individual = Individual.init(individual)
                     self.__parents_population.append(parent_individual)
-                    break
             if len(self.__parents_population) == self.state.config.size_of_population:
                 break
 
